@@ -16,6 +16,15 @@ bool is_dir(const char* path) {
    * return value from stat in case there is a problem, e.g., maybe the
    * the file doesn't actually exist.
    */
+	bool result = false;
+	struct stat buf;
+	if(stat(path, &buf)>0){ 
+		return false;
+	}
+	result = S_ISDIR(buf.st_mode);// result will either be set to true or false
+	
+	free(buf);
+	return result;
 }
 
 /* 
@@ -39,9 +48,7 @@ void process_directory(const char* path) {
 }
 
 void process_file(const char* path) {
-  /*
-   * Update the number of regular files.
-   */
+	num_regular++;
 }
 
 void process_path(const char* path) {
