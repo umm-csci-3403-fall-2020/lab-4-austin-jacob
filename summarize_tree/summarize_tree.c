@@ -17,11 +17,12 @@ bool is_dir(const char* path) {
    * the file doesn't actually exist.
    */
 	bool result = false;
-	struct stat buf;
-	if(stat(path, &buf)>0){ 
+	struct stat *buf = malloc(sizeof(struct stat));
+	if(stat(path, buf)>0){ 
+		free(buf);
 		return false;
 	}
-	result = S_ISDIR(buf.st_mode);// result will either be set to true or false
+	result = S_ISDIR(buf -> st_mode);// result will either be set to true or false
 	
 	free(buf);
 	return result;
@@ -34,17 +35,23 @@ bool is_dir(const char* path) {
 void process_path(const char*);
 
 void process_directory(const char* path) {
-  /*
-   * Update the number of directories seen, use opendir() to open the
-   * directory, and then use readdir() to loop through the entries
-   * and process them. You have to be careful not to process the
-   * "." and ".." directory entries, or you'll end up spinning in
-   * (infinite) loops. Also make sure you closedir() when you're done.
-   *
-   * You'll also want to use chdir() to move into this new directory,
-   * with a matching call to chdir() to move back out of it when you're
-   * done.
-   */
+	
+	DIR *dir = opendir(path);//open directory
+	//check to make sure the directory sent in is not null
+	if(dir == NULL){
+		return;
+	}
+	num_dirs++;
+
+	struct dirent *direntThing;
+	chdir(path);
+	while((direntThing = readdir(dir)) != NULL){
+	if( strcmp(direntThing -> d_name,".") != 0 && strcmp(direntThing->d_name,"..") != 0 ){
+		process_path(direntThing->d_name);	
+		} 
+	}
+	chdir("..");
+	closedir(dir);
 }
 
 void process_file(const char* path) {
