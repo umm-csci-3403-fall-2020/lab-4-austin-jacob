@@ -2,9 +2,8 @@
 
 directory=$1
 
-numFiles=$(find $directory -type f | wc -l)
-numDirs=$(find $directory -type d | wc -l)
+numFiles=$(find "$directory" -type f -print | wc -l | xargs)
+numDirs=$(find "$directory" -type d -print | wc -l | xargs)
 
-echo "Processed all the files from $directory."
 echo "There were $numDirs directories."
 echo "There were $numFiles regular files."
